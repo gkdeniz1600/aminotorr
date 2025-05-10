@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Görsel Düzenleyici</title>
+    <style>
+        #canvas {
+            border: 1px solid #000;
+        }
+        #imageUpload {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Görsel Düzenleyici</h1>
+    <!-- Görsel yükleme -->
+    <input type="file" id="imageUpload" accept="image/*">
+    <br><br>
+
+    <!-- Canvas Alanı (Görsel Düzenleme) -->
+    <canvas id="canvas" width="500" height="500"></canvas>
+    <br>
+
+    <!-- Görseli düzenlemek için basit bir buton -->
+    <button id="rotateBtn">Görseli Döndür</button>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const imageUpload = document.getElementById('imageUpload');
+        const rotateBtn = document.getElementById('rotateBtn');
+        let img = new Image();
+        let angle = 0;
+
+        // Görsel Yükleme İşlemi
+        imageUpload.addEventListener('change', (e) => {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                img.onload = function() {
+                    // Canvas'ı temizle
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    // Görseli Canvas üzerine yükle
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                };
+                img.src = event.target.result;
+            };
+            reader.readAsDataURL(e.target.files[0]);
+        });
+
+        // Görseli Döndürme (Basit bir rota işlemi)
+        rotateBtn.addEventListener('click', () => {
+            angle += 90;  // Her tıklamada 90 derece döndürecek
+            ctx.clearRect(0, 0, canvas.width, canvas.height);  // Canvas'ı temizle
+            ctx.save();  // Yedeği al
+            ctx.translate(canvas.width / 2, canvas.height / 2);  // Canvas'ın ortasına götür
+            ctx.rotate(angle * Math.PI / 180);  // Döndürme işlemi
+            ctx.drawImage(img, -img.width / 2, -img.height / 2, img.width, img.height); // Görseli tekrar çiz
+            ctx.restore();  // Yedeği geri yükle
+        });
+    </script>
+</body>
+</html>
